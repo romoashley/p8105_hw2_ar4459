@@ -170,3 +170,17 @@ The average age at baseline is `r mean(pull(mci_df, baseline_age))`.
 
 The proportion of women in the study who are carriers is `r nrow(female_car_df)/nrow(mci_df)`.
 
+
+```{r}
+amyloid_df = 
+  read_csv("data/mci_amyloid.csv", skip = 1) |> 
+  janitor::clean_names() |> 
+  select(id = study_id, t0 = baseline, t1 = time_2, t2 = time_4, t3 = time_6, t4 = time_8) |> 
+  pivot_longer(
+    t0:t4,
+    names_to = "time_points",
+    values_to = "ratio")
+```
+
+The steps of the import included loading the dataset using the read_csv function and the relative pathname. I also used skip = 1 because the first row in the csv file was a key or legend that described the time points in the dataset. Since this row was not data, I did not include it in my dataframe. I also changed the column name of baseline to t0 and the remaining time points so it followed an increase time for each column. 
+
