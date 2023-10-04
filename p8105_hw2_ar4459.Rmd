@@ -8,12 +8,14 @@ output: github_document
 
 ```{r}
 library(tidyverse)
+
 library(readxl)
 ```
 
 ## Problem 1
 
 ```{r clean_538_pols}
+
 month_df = 
   tibble(
     month_num = 1:12,
@@ -66,7 +68,7 @@ data_538 =
 str(data_538)
 ```
 
-##2 
+## Problem 2 
 
 First, we load, clean, and tidy the data.
 
@@ -111,13 +113,14 @@ full_merge_df =
   bind_rows(mr_wheel_df, prof_wheel_df, gwyn_wheel_df, .id = "Dumpster")
 ```
 
-The total number of observations in the resulting dataset is `r nrow(full_merge_df) `. Key variables include the weight in tons in Mr Trash Wheel, Professor Trash Wheel and Gwynnda as well as homes powered. 
+The total number of observations in the resulting dataset is `r nrow(full_merge_df) `. Key variables include the weight in tons in Mr
+Trash Wheel, Professor Trash Wheel and Gwynnda as well as homes powered. 
 
 The total weight collected by Professor Trash Wheel is `r sum(pull(prof_wheel_df, weight))` tons.
 
 The total number of cigarette butts collected by Gwynnda in July of 2021 is `r sum(select(full_merge_df, month, year, cigarette_butts)|> filter(month == "July", year == "2021") |> select(cigarette_butts))`.
 
-## 3
+## Problem 3
 
 First, we load and clean the baseline dataset.
 
@@ -141,7 +144,11 @@ mci_df =
    filter(baseline_age < onset_age | is.na(onset_age))
 ```
 
-An important step in the import process include skipping the first row in the csv file because it is a legend about the dataset and not data. Additionally, I removed those who already had a diagnosis of MCI during baseline. Lastly, I removed those who had no age of onset in the dataset, meaning they have not had a diagnosis of MCI.  Relevant features of the dataset include the age at baseline, age at onset, and the whether the participant is a carrier or non-carrier of the apoe4 variant. These are relevant because they provide information to investigate whether participants with the apoe4 variant develop MCI at a younger age.
+An important step in the import process include skipping the first row in the csv file because it is a legend about the dataset and not
+data. Additionally, I removed those who already had a diagnosis of MCI during baseline. Lastly, I removed those who had no age of onset 
+in the dataset, meaning they have not had a diagnosis of MCI.  Relevant features of the dataset include the age at baseline, age at onset,
+and the whether the participant is a carrier or non-carrier of the apoe4 variant. These are relevant because they provide information to
+investigate whether participants with the apoe4 variant develop MCI at a younger age.
 
 
 ```{r}
@@ -185,7 +192,10 @@ amyloid_df =
     values_to = "ratio")
 ```
 
-The steps of the import included loading the dataset using the read_csv function and the relative pathname. I also used skip = 1 because the first row in the csv file was a key or legend that described the time points in the dataset. Since this row was not data, I did not include it in my dataframe. I also changed the column name of baseline to t0 and the remaining time points so it followed an increase time for each column. 
+The steps of the import included loading the dataset using the read_csv function and the relative pathname. I also used skip = 1 because
+the first row in the csv file was a key or legend that described the time points in the dataset. Since this row was not data, I did not
+include it in my dataframe. I also changed the column name of baseline to t0 and the remaining time points so it followed an increase time
+for each column. 
 
 
 Now, we check to see whether some participants appear in only the baseline or amyloid dataset
@@ -198,7 +208,8 @@ nrow(amyloid_only)
 
 ```
 
-There are a total of `r nrow(mci_only)` participants who appear in only the baseline. This includes participants with the following id: 14, 4, 268.
+There are a total of `r nrow(mci_only)` participants who appear in only the baseline. This includes participants with the following id:
+14, 4, 268.
 
 There are a total of `r nrow(amyloid_only)` participants who appear in only the amyloid.
 
