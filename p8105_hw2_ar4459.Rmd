@@ -7,9 +7,11 @@ output: github_document
 
 
 ```{r}
+
 library(tidyverse)
 
 library(readxl)
+
 ```
 
 ## Problem 1
@@ -30,22 +32,26 @@ pols =
     president = recode(prez_gop, "0" = "dem", "1" = "gop", "2" = "gop")) |>
   left_join(x = _, y = month_df) |> 
   select(year, month, everything(), -day, -starts_with("prez")) 
+
 ```
 
 
 
 ```{r clean_538_snp}
+
 snp = 
   read_csv("data/snp.csv") |>
   separate(date, into = c("month", "day", "year"), convert = TRUE) |>
   arrange(year, month) |>
   mutate(month = month.name[month]) |>
   select(year, month, close) 
+
 ```
 
 Finally, we tidy the `unemployment` data so that it can be merged with the `pols` and `snp` datasets.
 
 ```{r clean_538_unemp}
+
 unemployment = 
   read_csv("data/unemployment.csv") |>
   rename(year = Year) |>
@@ -56,16 +62,19 @@ unemployment =
   ) |> 
   left_join(x = _, y = month_df) |> 
   select(year, month, unemployment)
+
 ```
 
 Now we merge the three datasets!
 
 ```{r merge_538}
+
 data_538 = 
   left_join(pols, snp) |>
   left_join(x = _, y = unemployment)
 
 str(data_538)
+
 ```
 
 ## Problem 2 
@@ -73,6 +82,7 @@ str(data_538)
 First, we load, clean, and tidy the data.
 
 ```{r}
+
 mr_wheel_df =
   read_xlsx("data/202309 Trash Wheel Collection Data.xlsx", 1, range = "A2:N587") |> 
   janitor::clean_names()|> 
@@ -109,8 +119,10 @@ gwyn_wheel_df =
 Next, we combine all datasets to produce a single tidy dataset. 
 
 ```{r}
+
 full_merge_df =
   bind_rows(mr_wheel_df, prof_wheel_df, gwyn_wheel_df, .id = "Dumpster")
+
 ```
 
 The total number of observations in the resulting dataset is `r nrow(full_merge_df) `. Key variables include the weight in tons in Mr
@@ -125,8 +137,9 @@ The total number of cigarette butts collected by Gwynnda in July of 2021 is `r s
 First, we load and clean the baseline dataset.
 
 ```{r}
+
 mci_df = 
-  read_csv("data/MCI_baseline.csv", skip = 1) |> 
+  read_csv("data/MCI_baseline.csv", skip = 1, na = ".") |> 
   janitor::clean_names() |>
   mutate(
     sex = case_match(
@@ -142,6 +155,7 @@ mci_df =
   ) |> 
    select(id, baseline_age = current_age, onset_age = age_at_onset, everything()) |> 
    filter(baseline_age < onset_age | is.na(onset_age))
+
 ```
 
 An important step in the import process include skipping the first row in the csv file because it is a legend about the dataset and not
@@ -152,12 +166,15 @@ investigate whether participants with the apoe4 variant develop MCI at a younger
 
 
 ```{r}
+
 # number of participants at baseline 
 nrow(mci_df)
 
 # participants who developed MCI
-developed_df = 
-  filter(mci_df, onset_age != ".")
+developed_mci = 
+  filter(mci_df, onset_age != "na")
+        
+nrow(developed_mci)
 
 # average age at baseline
 mean(pull(mci_df, baseline_age))
@@ -171,7 +188,7 @@ female_car_df =
 
 There were a total of `r nrow(mci_df) ` participants recruited at baseline. 
 
-Of the total participants at baseline, `r nrow(developed_df)` was the number of participants who developed MCI.
+Of the total participants at baseline, `r nrow(developed_mci)` was the number of participants who developed MCI.
 
 The average age at baseline is `r mean(pull(mci_df, baseline_age))`. 
 
@@ -182,6 +199,7 @@ The proportion of women in the study who are carriers is `r nrow(female_car_df)/
 Now, we load the biomarker dataset.
 
 ```{r}
+
 amyloid_df = 
   read_csv("data/mci_amyloid.csv", skip = 1) |> 
   janitor::clean_names() |> 
@@ -190,6 +208,7 @@ amyloid_df =
     t0:t4,
     names_to = "time_points",
     values_to = "ratio")
+
 ```
 
 The steps of the import included loading the dataset using the read_csv function and the relative pathname. I also used skip = 1 because
@@ -200,6 +219,7 @@ for each column.
 
 Now, we check to see whether some participants appear in only the baseline or amyloid dataset
 ```{r}
+
 mci_only = anti_join(mci_df, amyloid_df, by = "id")
 nrow(mci_only)
 
@@ -209,15 +229,17 @@ nrow(amyloid_only)
 ```
 
 There are a total of `r nrow(mci_only)` participants who appear in only the baseline. This includes participants with the following id:
-14, 4, 268.
+14, 49, 92, 179, 268, 304, 389, and 412.
 
 There are a total of `r nrow(amyloid_only)` participants who appear in only the amyloid.
 
 
 Now, we will identify partiicpants who appear in both datasets. 
 ```{r}
+
 included_both = inner_join(mci_df, amyloid_df, by = "id")
 nrow(included_both)
+
 ```
 
 The total number of participants included in both datasets is `r nrow(included_both) `. The mean age at baseline is `r mean(pull(included_both, baseline_age))`.
@@ -225,6 +247,8 @@ The total number of participants included in both datasets is `r nrow(included_b
 
 Now, we exposre the result as a CSV file. 
 ```{r}
+
 write_csv(included_both, "data/demographic_biomarker_cleaned.csv")
+
 ```
 
