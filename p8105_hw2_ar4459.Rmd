@@ -111,7 +111,7 @@ full_merge_df =
   bind_rows(mr_wheel_df, prof_wheel_df, gwyn_wheel_df, .id = "Dumpster")
 ```
 
-The total number of observations in the resulting dataset is `r nrow(full_merge_df) `. Key variables include the weight in tons in Mr Trash Wheel, Professor Trash Wheel and Gwynnda. 
+The total number of observations in the resulting dataset is `r nrow(full_merge_df) `. Key variables include the weight in tons in Mr Trash Wheel, Professor Trash Wheel and Gwynnda as well as homes powered. 
 
 The total weight collected by Professor Trash Wheel is `r sum(pull(prof_wheel_df, weight))` tons.
 
