@@ -117,7 +117,26 @@ The total weight collected by Professor Trash Wheel is `r sum(pull(prof_wheel_df
 
 The total number of cigarette butts collected by Gwynnda in July of 2021 is `r sum(select(full_merge_df, month, year, cigarette_butts)|> filter(month == "July", year == "2021") |> select(cigarette_butts))`.
 
-
+## 3
+```{r}
+mci_df = 
+  read_csv("data/MCI_baseline.csv", skip = 1) |> 
+  janitor::clean_names() |>
+  mutate(
+    sex = case_match(
+      sex, 
+      1 ~ "male",
+      0 ~"female"
+    ),
+    apoe4 = case_match(
+      apoe4, 
+      1 ~ "carrier",
+      0 ~ "non-carrier"
+    ), 
+  ) |> 
+   select(id, baseline_age = current_age, onset_age = age_at_onset, everything()) |> 
+   filter(baseline_age < onset_age | is.na(onset_age))
+```
 
 
 
