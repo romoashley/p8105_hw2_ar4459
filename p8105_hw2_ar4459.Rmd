@@ -203,3 +203,11 @@ There are a total of `r nrow(mci_only)` participants who appear in only the base
 There are a total of `r nrow(amyloid_only)` participants who appear in only the amyloid.
 
 
+Now, we will identify partiicpants who appear in both datasets. 
+```{r}
+included_both = inner_join(mci_df, amyloid_df, by = "id")
+nrow(included_both)
+```
+
+The total number of participants included in both datasets is `r nrow(included_both) `. The mean age at baseline is `r mean(pull(included_both, baseline_age))`.
+
