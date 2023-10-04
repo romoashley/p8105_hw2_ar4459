@@ -68,6 +68,8 @@ str(data_538)
 
 ##2 
 
+First, we load, clean, and tidy the data.
+
 ```{r}
 mr_wheel_df =
   read_xlsx("data/202309 Trash Wheel Collection Data.xlsx", 1, range = "A2:N587") |> 
@@ -99,7 +101,23 @@ gwyn_wheel_df =
   drop_na(dumpster) |> 
   select(dumpster, month, year, date, weight = weight_tons, volume = volume_cubic_yards, everything())
 
+
 ```
+
+Next, we combine all datasets to produce a single tidy dataset. 
+
+```{r}
+full_merge_df =
+  bind_rows(mr_wheel_df, prof_wheel_df, gwyn_wheel_df, .id = "Dumpster")
+```
+
+The total number of observations in the resulting dataset is `r nrow(full_merge_df) `. Key variables include the weight in tons in Mr Trash Wheel, Professor Trash Wheel and Gwynnda. 
+
+The total weight collected by Professor Trash Wheel is `r sum(pull(prof_wheel_df, weight))` tons.
+
+The total number of cigarette butts collected by Gwynnda in July of 2021 is `r sum(select(full_merge_df, month, year, cigarette_butts)|> filter(month == "July", year == "2021") |> select(cigarette_butts))`.
+
+
 
 
 
